@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "target": "es6",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": false,
+    "removeComments": false,
+    "noImplicitAny": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": [
+    "app",
+    "test"
+  ]
+}
