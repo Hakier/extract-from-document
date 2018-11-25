@@ -1,7 +1,18 @@
 import { Source } from '../models/source';
 import { extractSource } from './extract-source';
+import { Scope } from '../models/scope';
 
 describe('extractSource', () => {
+  describe('given undefined', () => {
+    it('should return undefined', () => {
+      expect(extractSource(undefined)).toBeUndefined();
+    });
+  });
+  describe('given null', () => {
+    it('should return undefined', () => {
+      expect(extractSource(null)).toBeUndefined();
+    });
+  });
   describe('given Source', () => {
     describe('with truthy isSingle', () => {
       beforeAll(() => {
@@ -68,14 +79,62 @@ describe('extractSource', () => {
     });
   });
   describe('given map', () => {
-    const mockedDom: any = { h1: { innerText: 'lorem ipsum' } };
+    const mockedDom: any = {
+      a: { href: 'http://hakier.it/', innerText: 'hakier.it' },
+      h1: { innerText: 'lorem ipsum' },
+    };
 
     beforeAll(() => {
       document.querySelector = jest.fn((selector: string): string => mockedDom[selector]);
     });
 
     it('should return object of extracted values', () => {
-      expect(extractSource({ header: new Source('h1') })).toEqual({ header: 'lorem ipsum' });
+      const recipe = {
+        header: new Source('h1'),
+        link: {
+          url: new Source('a', 'href'),
+          value: new Source('a'),
+        },
+      };
+      const expected = {
+        header: 'lorem ipsum',
+        link: {
+          url: 'http://hakier.it/',
+          value: 'hakier.it',
+        },
+      };
+      expect(extractSource({})).toEqual({});
+      expect(extractSource(recipe)).toEqual(expected);
+    });
+  });
+  describe('given Scope', () => {
+    describe('with only map', () => {
+      const mockedDom: any = {
+        '.title': { innerText: 'Node.js' },
+        'img': { alt: 'Node.js logo', src: 'https://nodejs.org/static/images/logo.svg' },
+      };
+
+      beforeAll(() => {
+        document.querySelector = jest.fn((selector: string): string => mockedDom[selector]);
+      });
+
+      it('should return structured response', () => {
+        const map = {
+          img: {
+            alt: new Source('img', 'alt'),
+            src: new Source('img', 'src'),
+          },
+          title: new Source('.title'),
+        };
+        const expected = {
+          img: {
+            alt: 'Node.js logo',
+            src: 'https://nodejs.org/static/images/logo.svg',
+          },
+          title: 'Node.js',
+        };
+        expect(extractSource(new Scope(map, '.knowledge .cart'))).toEqual(expected);
+      });
     });
   });
 });

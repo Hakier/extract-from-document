@@ -54,18 +54,19 @@ describe('given map', () => {
       header: 'Header test value',
       link: 'http://hakier.it/',
     };
+    expect(await extract({})).toEqual({});
     expect(await extract(recipe)).toEqual(expected);
     expect(await extract({
       header: new Source('h1'),
       link: {
         hrefs: new Source('nav a', 'href', false),
-        values: new Source('a', 'innerText', false),
+        values: new Source('nav a', 'innerText', false),
       },
     })).toEqual({
       header: 'Header test value',
       link: {
         hrefs: ['https://google.com/', 'https://nodejs.org/'],
-        values: ['hakier', 'Google', 'Node.js'],
+        values: ['Google', 'Node.js'],
       },
     });
   });
