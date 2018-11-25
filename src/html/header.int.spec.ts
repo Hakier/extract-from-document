@@ -1,3 +1,4 @@
+import { Scope } from '../models/scope';
 import { Source } from '../models/source';
 import { extract } from './header';
 
@@ -46,28 +47,60 @@ describe('given Source', () => {
 });
 describe('given map', () => {
   it('should return object of extracted values', async () => {
-    const recipe = {
+    const simpleMap = {
       header: new Source('h1'),
       link: new Source('#link', 'href'),
     };
-    const expected = {
+    const expectedSimpleMapResult = {
       header: 'Header test value',
       link: 'http://hakier.it/',
     };
-    expect(await extract({})).toEqual({});
-    expect(await extract(recipe)).toEqual(expected);
-    expect(await extract({
+    const nestedMap = {
       header: new Source('h1'),
       link: {
         hrefs: new Source('nav a', 'href', false),
         values: new Source('nav a', 'innerText', false),
       },
-    })).toEqual({
+    };
+    const expectedNestedMapResult = {
       header: 'Header test value',
       link: {
         hrefs: ['https://google.com/', 'https://nodejs.org/'],
         values: ['Google', 'Node.js'],
       },
+    };
+    expect(await extract({})).toEqual({});
+    expect(await extract(simpleMap)).toEqual(expectedSimpleMapResult);
+    expect(await extract(nestedMap)).toEqual(expectedNestedMapResult);
+  });
+});
+describe('given Scope', () => {
+  describe('with only map', () => {
+    it('should return structured response', async () => {
+      const simpleMap = {
+        header: new Source('h1'),
+        link: new Source('#link', 'href'),
+      };
+      const expectedSimpleMapResult = {
+        header: 'Header test value',
+        link: 'http://hakier.it/',
+      };
+      const nestedMap = {
+        header: new Source('h1'),
+        link: {
+          hrefs: new Source('nav a', 'href', false),
+          values: new Source('nav a', 'innerText', false),
+        },
+      };
+      const expectedNestedMapResult = {
+        header: 'Header test value',
+        link: {
+          hrefs: ['https://google.com/', 'https://nodejs.org/'],
+          values: ['Google', 'Node.js'],
+        },
+      };
+      expect(await extract(new Scope(simpleMap))).toEqual(expectedSimpleMapResult);
+      expect(await extract(new Scope(nestedMap))).toEqual(expectedNestedMapResult);
     });
   });
 });

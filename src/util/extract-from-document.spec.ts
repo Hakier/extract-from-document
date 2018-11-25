@@ -1,23 +1,23 @@
-import { Source } from '../models/source';
-import { extractSource } from './extract-source';
 import { Scope } from '../models/scope';
+import { Source } from '../models/source';
+import { extractFromDocument } from './extract-from-document';
 
-describe('extractSource', () => {
+describe('extractFromDocument', () => {
   describe('given undefined', () => {
     it('should return undefined', () => {
-      expect(extractSource(undefined)).toBeUndefined();
+      expect(extractFromDocument(undefined)).toBeUndefined();
     });
   });
   describe('given null', () => {
     it('should return undefined', () => {
-      expect(extractSource(null)).toBeUndefined();
+      expect(extractFromDocument(null)).toBeUndefined();
     });
   });
   describe('given Source', () => {
     describe('with truthy isSingle', () => {
       beforeAll(() => {
         document.querySelector = jest.fn();
-        extractSource(new Source('some-selector'));
+        extractFromDocument(new Source('some-selector'));
       });
 
       it('should search for single element using selector from Source', () => {
@@ -30,7 +30,7 @@ describe('extractSource', () => {
         });
 
         it(`should return value of element property with key equal source's attribute`, () => {
-          expect(extractSource(new Source('some-selector', 'innerText'))).toEqual('lorem ipsum');
+          expect(extractFromDocument(new Source('some-selector', 'innerText'))).toEqual('lorem ipsum');
         });
       });
       describe('when element NOT found', () => {
@@ -39,7 +39,7 @@ describe('extractSource', () => {
         });
 
         it('should return null', () => {
-          expect(extractSource(new Source('some-selector'))).toBeNull();
+          expect(extractFromDocument(new Source('some-selector'))).toBeNull();
         });
       });
     });
@@ -47,7 +47,7 @@ describe('extractSource', () => {
       beforeAll(() => {
         document.querySelector = jest.fn();
         document.querySelectorAll = jest.fn((): any[] => []);
-        extractSource(new Source('some-selector', 'innerText', false));
+        extractFromDocument(new Source('some-selector', 'innerText', false));
       });
 
       it('should NOT search for single element', () => {
@@ -64,7 +64,7 @@ describe('extractSource', () => {
 
         it(`should return value of element property with key equal source's attribute`, () => {
           const expectedResult = ['lorem ipsum', 'dolor sit amet'];
-          expect(extractSource(new Source('some-selector', 'innerText', false))).toEqual(expectedResult);
+          expect(extractFromDocument(new Source('some-selector', 'innerText', false))).toEqual(expectedResult);
         });
       });
       describe('when elements NOT found', () => {
@@ -73,7 +73,7 @@ describe('extractSource', () => {
         });
 
         it('should return empty array', () => {
-          expect(extractSource(new Source('some-selector', 'innerText', false))).toEqual([]);
+          expect(extractFromDocument(new Source('some-selector', 'innerText', false))).toEqual([]);
         });
       });
     });
@@ -103,8 +103,8 @@ describe('extractSource', () => {
           value: 'hakier.it',
         },
       };
-      expect(extractSource({})).toEqual({});
-      expect(extractSource(recipe)).toEqual(expected);
+      expect(extractFromDocument({})).toEqual({});
+      expect(extractFromDocument(recipe)).toEqual(expected);
     });
   });
   describe('given Scope', () => {
@@ -133,7 +133,7 @@ describe('extractSource', () => {
           },
           title: 'Node.js',
         };
-        expect(extractSource(new Scope(map, '.knowledge .cart'))).toEqual(expected);
+        expect(extractFromDocument(new Scope(map))).toEqual(expected);
       });
     });
   });
