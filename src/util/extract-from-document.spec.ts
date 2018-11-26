@@ -135,6 +135,164 @@ describe('extractFromDocument', () => {
         };
         expect(extractFromDocument(new Scope(map))).toEqual(expected);
       });
+      it('should also work with nested scopes', () => {
+        const map = {
+          header: new Scope({ title: new Source('.title') }),
+          img: new Scope({
+            alt: new Source('img', 'alt'),
+            src: new Source('img', 'src'),
+          }),
+        };
+        const expected = {
+          header: { title: 'Node.js' },
+          img: {
+            alt: 'Node.js logo',
+            src: 'https://nodejs.org/static/images/logo.svg',
+          },
+        };
+        expect(extractFromDocument(new Scope(map))).toEqual(expected);
+      });
+    });
+    describe('with map and selector', () => {
+      describe('and truthy isSingle', () => {
+        const mockedDomSingle: any = {
+          '.title': { innerText: 'Node.js' },
+          'img': { alt: 'Node.js logo', src: 'https://nodejs.org/static/images/logo.svg' },
+        };
+        const mockedDomMultiple: any = {
+          '.content a': [
+            { href: 'https://nodejs.org/dist/latest-v10.x/docs/api/' },
+            { href: 'https://nodejs.org/dist/latest-v10.x/docs/api/async_hooks.html' },
+          ],
+        };
+        let scope: any;
+        let response: any;
+
+        beforeAll(() => {
+          const map = {
+            img: {
+              alt: new Source('img', 'alt'),
+              src: new Source('img', 'src'),
+            },
+            title: new Source('.title'),
+            urls: new Source('.content a', 'href', false),
+          };
+          scope = {
+            querySelector: jest.fn((selector: string): string => mockedDomSingle[selector]),
+            querySelectorAll: jest.fn((selector: string): string => mockedDomMultiple[selector]),
+          };
+          document.querySelector = jest.fn(() => scope);
+          response = extractFromDocument(new Scope(map, '.knowledge .cart'));
+        });
+
+        it('should search for element inside document', () => {
+          expect(document.querySelector).toHaveBeenCalledWith('.knowledge .cart');
+        });
+        it('should search for elements inside scope', () => {
+          expect(scope.querySelector).toHaveBeenCalledWith('.title');
+          expect(scope.querySelector).toHaveBeenCalledWith('img');
+          expect(scope.querySelectorAll).toHaveBeenCalledWith('.content a');
+        });
+        it('should return structured response as object', () => {
+          const expectedResponse = {
+            img: {
+              alt: 'Node.js logo',
+              src: 'https://nodejs.org/static/images/logo.svg',
+            },
+            title: 'Node.js',
+            urls: [
+              'https://nodejs.org/dist/latest-v10.x/docs/api/',
+              'https://nodejs.org/dist/latest-v10.x/docs/api/async_hooks.html',
+            ],
+          };
+          expect(response).toEqual(expectedResponse);
+        });
+      });
+      describe('and falsy isSingle', () => {
+        const mockedDomSingle1: any = {
+          '.title': { innerText: 'Node.js' },
+          'img': { alt: 'Node.js logo', src: 'https://nodejs.org/static/images/logo.svg' },
+        };
+        const mockedDomMultiple1: any = {
+          '.content a': [
+            { href: 'https://nodejs.org/dist/latest-v10.x/docs/api/' },
+            { href: 'https://nodejs.org/dist/latest-v10.x/docs/api/async_hooks.html' },
+          ],
+        };
+        const mockedDomSingle2: any = {
+          '.title': { innerText: 'TypeScript' },
+          'img': { alt: 'TypeScript logo', src: 'https://www.typescriptlang.org/assets/images/logo_nocircle.svg' },
+        };
+        const mockedDomMultiple2: any = {
+          '.content a': [
+            { href: 'https://www.typescriptlang.org/docs/index.html' },
+            { href: 'https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-1.html' },
+          ],
+        };
+        let scope1: any;
+        let scope2: any;
+        let response: any;
+
+        beforeAll(() => {
+          const map = {
+            img: {
+              alt: new Source('img', 'alt'),
+              src: new Source('img', 'src'),
+            },
+            title: new Source('.title'),
+            urls: new Source('.content a', 'href', false),
+          };
+          scope1 = {
+            querySelector: jest.fn((selector: string): string => mockedDomSingle1[selector]),
+            querySelectorAll: jest.fn((selector: string): string => mockedDomMultiple1[selector]),
+          };
+          scope2 = {
+            querySelector: jest.fn((selector: string): string => mockedDomSingle2[selector]),
+            querySelectorAll: jest.fn((selector: string): string => mockedDomMultiple2[selector]),
+          };
+          document.querySelectorAll = jest.fn(() => [scope1, scope2]);
+          response = extractFromDocument(new Scope(map, '.knowledge .cart', false));
+        });
+
+        it('should search for elements inside document', () => {
+          expect(document.querySelectorAll).toHaveBeenCalledWith('.knowledge .cart');
+        });
+        it('should search for elements inside scopes', () => {
+          expect(scope1.querySelector).toHaveBeenCalledWith('.title');
+          expect(scope1.querySelector).toHaveBeenCalledWith('img');
+          expect(scope1.querySelectorAll).toHaveBeenCalledWith('.content a');
+          expect(scope2.querySelector).toHaveBeenCalledWith('.title');
+          expect(scope2.querySelector).toHaveBeenCalledWith('img');
+          expect(scope2.querySelectorAll).toHaveBeenCalledWith('.content a');
+        });
+        it('should return structured response as array of objects', () => {
+          const expectedResponse = [
+            {
+              img: {
+                alt: 'Node.js logo',
+                src: 'https://nodejs.org/static/images/logo.svg',
+              },
+              title: 'Node.js',
+              urls: [
+                'https://nodejs.org/dist/latest-v10.x/docs/api/',
+                'https://nodejs.org/dist/latest-v10.x/docs/api/async_hooks.html',
+              ],
+            },
+            {
+              img: {
+                alt: 'TypeScript logo',
+                src: 'https://www.typescriptlang.org/assets/images/logo_nocircle.svg',
+              },
+              title: 'TypeScript',
+              urls: [
+                'https://www.typescriptlang.org/docs/index.html',
+                'https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-1.html',
+              ],
+            },
+          ];
+          expect(response).toEqual(expectedResponse);
+        });
+      });
     });
   });
 });

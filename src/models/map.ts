@@ -1,5 +1,5 @@
-import { Source } from './source';
+import { IRecipe } from './recipe';
 
 export interface IMap {
-  [key: string]: Source | IMap;
+  [key: string]: IRecipe;
 }

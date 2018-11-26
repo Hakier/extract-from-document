@@ -1,7 +1,7 @@
-import { Scope } from './models/scope';
-import { Source } from './models/source';
-import { extract } from './util/extract';
-import { logger } from './util/logger';
+import { Scope } from '../src/models/scope';
+import { Source } from '../src/models/source';
+import { extract } from '../src/util/extract';
+import { logger } from '../src/util/logger';
 
 const recipe = {
   hotNetworkQuestions: new Scope({
