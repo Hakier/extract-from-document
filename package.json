@@ -11,8 +11,8 @@
   "author": "hakier <hakier29a@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "puppeteer": "^1.10.0",
-    "winston": "^3.1.0"
+    "puppeteer": "^1.11.0",
+    "@hakier/logger": "^1.0.0"
   },
   "devDependencies": {
     "@types/jest": "^23.3.9",
