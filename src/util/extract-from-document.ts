@@ -62,7 +62,7 @@ export function extractFromDocument(recipe: IRecipe, scope: IScope = document): 
 
     public static source({ selector, attribute, isSingle }: Source): string | null | Array<string | null> {
       const retrieveAttributeValue = (el: Element | null): string | null => {
-        return !el ? null : Util.trimString(el.getAttribute(attribute));
+        return !el ? null : Util.trimString((el as any)[attribute]);
       };
 
       return isSingle

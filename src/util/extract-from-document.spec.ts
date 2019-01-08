@@ -25,12 +25,26 @@ describe('extractFromDocument', () => {
       });
 
       describe('when element found', () => {
-        beforeAll(() => {
-          document.querySelector = jest.fn(() => ({ innerText: 'lorem ipsum' }));
-        });
+        describe(`and value of element's attribute is a string`, () => {
+          beforeAll(() => {
+            document.querySelector = jest.fn(() => ({ innerText: 'lorem ipsum' }));
+          });
 
-        it(`should return value of element property with key equal source's attribute`, () => {
-          expect(extractFromDocument(new Source('some-selector', 'innerText'))).toEqual('lorem ipsum');
+          it(`should return value of element property with key equal source's attribute`, () => {
+            expect(extractFromDocument(new Source('some-selector', 'innerText'))).toEqual('lorem ipsum');
+          });
+        });
+        describe(`and value of element's attribute is NOT a string`, () => {
+          let el: any;
+
+          beforeAll(() => {
+            el = { toString: jest.fn() };
+            document.querySelector = jest.fn(() => (el));
+          });
+
+          it(`should return value of element property with key equal source's attribute`, () => {
+            expect(extractFromDocument(new Source('some-selector', 'toString'))).toEqual(el.toString);
+          });
         });
       });
       describe('when element NOT found', () => {
@@ -108,51 +122,6 @@ describe('extractFromDocument', () => {
     });
   });
   describe('given Scope', () => {
-    describe('with only map', () => {
-      const mockedDom: any = {
-        '.title': { innerText: 'Node.js' },
-        'img': { alt: 'Node.js logo', src: 'https://nodejs.org/static/images/logo.svg' },
-      };
-
-      beforeAll(() => {
-        document.querySelector = jest.fn((selector: string): string => mockedDom[selector]);
-      });
-
-      it('should return structured response', () => {
-        const map = {
-          img: {
-            alt: new Source('img', 'alt'),
-            src: new Source('img', 'src'),
-          },
-          title: new Source('.title'),
-        };
-        const expected = {
-          img: {
-            alt: 'Node.js logo',
-            src: 'https://nodejs.org/static/images/logo.svg',
-          },
-          title: 'Node.js',
-        };
-        expect(extractFromDocument(new Scope(map))).toEqual(expected);
-      });
-      it('should also work with nested scopes', () => {
-        const map = {
-          header: new Scope({ title: new Source('.title') }),
-          img: new Scope({
-            alt: new Source('img', 'alt'),
-            src: new Source('img', 'src'),
-          }),
-        };
-        const expected = {
-          header: { title: 'Node.js' },
-          img: {
-            alt: 'Node.js logo',
-            src: 'https://nodejs.org/static/images/logo.svg',
-          },
-        };
-        expect(extractFromDocument(new Scope(map))).toEqual(expected);
-      });
-    });
     describe('with map and selector', () => {
       describe('and truthy isSingle', () => {
         const mockedDomSingle: any = {
