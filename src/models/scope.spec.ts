@@ -2,21 +2,6 @@ import { Scope } from './scope';
 import { Source } from './source';
 
 describe('Scope', () => {
-  describe('given only map', () => {
-    let givenOnlyMap: Scope;
-
-    beforeAll(() => (givenOnlyMap = new Scope({ header: new Source('h1') })));
-
-    it('should set map', () => {
-      expect(givenOnlyMap.map).toEqual({ header: new Source('h1') });
-    });
-    it('should set selector to undefined', () => {
-      expect(givenOnlyMap.selector).toBeUndefined();
-    });
-    it('should set isSingle to default value = true', () => {
-      expect(givenOnlyMap.isSingle).toBe(true);
-    });
-  });
   describe('given map and selector', () => {
     let givenMapAndSelector: Scope;
 

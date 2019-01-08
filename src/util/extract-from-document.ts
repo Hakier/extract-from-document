@@ -18,8 +18,8 @@ export function extractFromDocument(recipe: IRecipe, scope: IScope = document): 
   }
 
   class Util {
-    public static map(arrayLike: NodeList, cb: ICallback): any[] {
-      return Array.prototype.map.call(arrayLike, cb);
+    public static map<T>(arrayLike: NodeList|T[], cb: ICallback): T[] {
+      return Array.prototype.map.call(arrayLike, cb) as T[];
     }
 
     public static mapValues(obj: IObject, cb: ICallback): IObject {
@@ -32,7 +32,7 @@ export function extractFromDocument(recipe: IRecipe, scope: IScope = document): 
       return !!(obj && typeof obj === 'object');
     }
 
-    public static isString(value: string): boolean {
+    public static isString(value: any): boolean {
       return typeof value === 'string';
     }
 
@@ -48,24 +48,26 @@ export function extractFromDocument(recipe: IRecipe, scope: IScope = document): 
       return !!selector;
     }
 
-    public static trimString(value: string): string {
-      return Util.isString(value) ? value.trim() : value;
+    public static trimString<T = string>(value: T): T | string {
+      return Util.isString(value) ? (value as any as string).trim() : value;
     }
   }
 
   class Extractor {
-    public static map(map: IMap, innerScope: IScope = scope): IObject {
-      return innerScope
-        && Util.isObject(map)
-        && Util.mapValues(map, (r: IRecipe) => extractFromDocument(r, innerScope));
+    public static map(map: IMap, innerScope: IScope | null = scope): IObject {
+      return innerScope && Util.isObject(map)
+        ? Util.mapValues(map, (r: IRecipe) => extractFromDocument(r, innerScope))
+        : {};
     }
 
-    public static source({ selector, attribute, isSingle }: Source): string | string[] {
-      const retrieveAttributeValue = (element: any): string => !!element ? Util.trimString(element[attribute]) : null;
+    public static source({ selector, attribute, isSingle }: Source): string | null | Array<string | null> {
+      const retrieveAttributeValue = (el: Element | null): string | null => {
+        return !el ? null : Util.trimString(el.getAttribute(attribute));
+      };
 
       return isSingle
         ? retrieveAttributeValue(scope.querySelector(selector))
-        : Util.map(scope.querySelectorAll(selector), retrieveAttributeValue);
+        : Util.map<string | null>(scope.querySelectorAll(selector), retrieveAttributeValue);
     }
 
     public static scope({ map, selector, isSingle }: Scope): any {

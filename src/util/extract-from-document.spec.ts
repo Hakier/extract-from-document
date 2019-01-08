@@ -5,12 +5,12 @@ import { extractFromDocument } from './extract-from-document';
 describe('extractFromDocument', () => {
   describe('given undefined', () => {
     it('should return undefined', () => {
-      expect(extractFromDocument(undefined)).toBeUndefined();
+      expect(extractFromDocument(undefined as any)).toBeUndefined();
     });
   });
   describe('given null', () => {
     it('should return undefined', () => {
-      expect(extractFromDocument(null)).toBeUndefined();
+      expect(extractFromDocument(null as any)).toBeUndefined();
     });
   });
   describe('given Source', () => {
