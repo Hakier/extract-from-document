@@ -13,6 +13,22 @@ describe('extractFromDocument', () => {
       expect(extractFromDocument(null as any)).toBeUndefined();
     });
   });
+  describe('given false', () => {
+    it('should return an empty object', () => {
+      expect(extractFromDocument(false as any)).toBeUndefined();
+    });
+  });
+  describe('given true', () => {
+    it('should return an empty object', () => {
+      expect(extractFromDocument(true as any)).toBeUndefined();
+    });
+  });
+  describe('given array', () => {
+    it('should return an empty object', () => {
+      expect(extractFromDocument(['lorem', 'ipsum'] as any)).toBeUndefined();
+      expect(extractFromDocument([] as any)).toBeUndefined();
+    });
+  });
   describe('given Source', () => {
     describe('with truthy isSingle', () => {
       beforeAll(() => {

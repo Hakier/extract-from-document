@@ -13,12 +13,8 @@ type IScope = HTMLElement | Document;
 
 // tslint:disable:max-classes-per-file
 export function extractFromDocument(recipe: IRecipe, scope: IScope = document): any {
-  if (!recipe) {
-    return;
-  }
-
   class Util {
-    public static map<T>(arrayLike: NodeList|T[], cb: ICallback): T[] {
+    public static map<T>(arrayLike: NodeList | T[], cb: ICallback): T[] {
       return Array.prototype.map.call(arrayLike, cb) as T[];
     }
 
@@ -40,12 +36,8 @@ export function extractFromDocument(recipe: IRecipe, scope: IScope = document): 
       return !!(selector && attribute);
     }
 
-    public static hasMap({ map }: Scope): boolean {
-      return !!map;
-    }
-
-    public static hasSelector({ selector }: Scope | Source): boolean {
-      return !!selector;
+    public static isScope({ selector, map }: Scope): boolean {
+      return !!(selector && map);
     }
 
     public static trimString<T = string>(value: T): T | string {
@@ -77,16 +69,16 @@ export function extractFromDocument(recipe: IRecipe, scope: IScope = document): 
     }
   }
 
+  if (Array.isArray(recipe) || !Util.isObject(recipe)) {
+    return;
+  }
+
   if (Util.isSource(recipe as Source)) {
     return Extractor.source(recipe as Source);
   }
 
-  if (Util.hasSelector(recipe as Scope)) {
+  if (Util.isScope(recipe as Scope)) {
     return Extractor.scope(recipe as Scope);
-  }
-
-  if (Util.hasMap(recipe as Scope)) {
-    return Extractor.map((recipe as Scope).map);
   }
 
   return Extractor.map(recipe as IMap);
