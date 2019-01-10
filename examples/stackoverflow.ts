@@ -9,6 +9,10 @@ const recipe = {
     url: new Source('a', 'href'),
   }, '#hot-network-questions li', false),
   related: new Scope({
+    answer: {
+      url: new Source('a[title^="Vote score"]', 'href'),
+      votes: new Source('.answer-votes'),
+    },
     title: new Source('.question-hyperlink'),
     url: new Source('.question-hyperlink', 'href'),
   }, '.module.sidebar-related .spacer', false),

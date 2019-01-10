@@ -140,57 +140,142 @@ describe('extractFromDocument', () => {
   describe('given Scope', () => {
     describe('with map and selector', () => {
       describe('and truthy isSingle', () => {
-        const mockedDomSingle: any = {
-          '.title': { innerText: 'Node.js' },
-          'img': { alt: 'Node.js logo', src: 'https://nodejs.org/static/images/logo.svg' },
-        };
-        const mockedDomMultiple: any = {
-          '.content a': [
-            { href: 'https://nodejs.org/dist/latest-v10.x/docs/api/' },
-            { href: 'https://nodejs.org/dist/latest-v10.x/docs/api/async_hooks.html' },
-          ],
-        };
-        let scope: any;
-        let response: any;
-
-        beforeAll(() => {
-          const map = {
-            img: {
-              alt: new Source('img', 'alt'),
-              src: new Source('img', 'src'),
-            },
-            title: new Source('.title'),
-            urls: new Source('.content a', 'href', false),
+        describe('when map is an object and NOT an array', () => {
+          const mockedDomSingle: any = {
+            '.title': { innerText: 'Node.js' },
+            'img': { alt: 'Node.js logo', src: 'https://nodejs.org/static/images/logo.svg' },
           };
-          scope = {
-            querySelector: jest.fn((selector: string): string => mockedDomSingle[selector]),
-            querySelectorAll: jest.fn((selector: string): string => mockedDomMultiple[selector]),
-          };
-          document.querySelector = jest.fn(() => scope);
-          response = extractFromDocument(new Scope(map, '.knowledge .cart'));
-        });
-
-        it('should search for element inside document', () => {
-          expect(document.querySelector).toHaveBeenCalledWith('.knowledge .cart');
-        });
-        it('should search for elements inside scope', () => {
-          expect(scope.querySelector).toHaveBeenCalledWith('.title');
-          expect(scope.querySelector).toHaveBeenCalledWith('img');
-          expect(scope.querySelectorAll).toHaveBeenCalledWith('.content a');
-        });
-        it('should return structured response as object', () => {
-          const expectedResponse = {
-            img: {
-              alt: 'Node.js logo',
-              src: 'https://nodejs.org/static/images/logo.svg',
-            },
-            title: 'Node.js',
-            urls: [
-              'https://nodejs.org/dist/latest-v10.x/docs/api/',
-              'https://nodejs.org/dist/latest-v10.x/docs/api/async_hooks.html',
+          const mockedDomMultiple: any = {
+            '.content a': [
+              { href: 'https://nodejs.org/dist/latest-v10.x/docs/api/' },
+              { href: 'https://nodejs.org/dist/latest-v10.x/docs/api/async_hooks.html' },
             ],
           };
-          expect(response).toEqual(expectedResponse);
+          let scope: any;
+          let response: any;
+
+          beforeAll(() => {
+            const map = {
+              img: {
+                alt: new Source('img', 'alt'),
+                src: new Source('img', 'src'),
+              },
+              title: new Source('.title'),
+              urls: new Source('.content a', 'href', false),
+            };
+            scope = {
+              querySelector: jest.fn((selector: string): string => mockedDomSingle[selector]),
+              querySelectorAll: jest.fn((selector: string): string => mockedDomMultiple[selector]),
+            };
+            document.querySelector = jest.fn(() => scope);
+            response = extractFromDocument(new Scope(map, '.knowledge .cart'));
+          });
+
+          it('should search for element inside document', () => {
+            expect(document.querySelector).toHaveBeenCalledTimes(1);
+            expect(document.querySelector).toHaveBeenCalledWith('.knowledge .cart');
+          });
+          it('should search for elements inside scope', () => {
+            expect(scope.querySelector).toHaveBeenCalledWith('.title');
+            expect(scope.querySelector).toHaveBeenCalledWith('img');
+            expect(scope.querySelectorAll).toHaveBeenCalledWith('.content a');
+          });
+          it('should return structured response as object', () => {
+            const expectedResponse = {
+              img: {
+                alt: 'Node.js logo',
+                src: 'https://nodejs.org/static/images/logo.svg',
+              },
+              title: 'Node.js',
+              urls: [
+                'https://nodejs.org/dist/latest-v10.x/docs/api/',
+                'https://nodejs.org/dist/latest-v10.x/docs/api/async_hooks.html',
+              ],
+            };
+            expect(response).toEqual(expectedResponse);
+          });
+        });
+        describe('when map is an array', () => {
+          const mockedDomSingle: any = {
+            '.title': { innerText: 'Node.js' },
+            'img': { alt: 'Node.js logo', src: 'https://nodejs.org/static/images/logo.svg' },
+          };
+          const mockedDomMultiple: any = {
+            '.content a': [
+              { href: 'https://nodejs.org/dist/latest-v10.x/docs/api/' },
+              { href: 'https://nodejs.org/dist/latest-v10.x/docs/api/async_hooks.html' },
+            ],
+          };
+          let scope: any;
+          let response: any;
+
+          beforeAll(() => {
+            const map = [
+              {
+                alt: new Source('img', 'alt'),
+                src: new Source('img', 'src'),
+              },
+              new Source('.title'),
+              new Source('.content a', 'href', false),
+            ];
+            scope = {
+              querySelector: jest.fn((selector: string): string => mockedDomSingle[selector]),
+              querySelectorAll: jest.fn((selector: string): string => mockedDomMultiple[selector]),
+            };
+            document.querySelector = jest.fn(() => scope);
+            response = extractFromDocument(new Scope(map as any, '.knowledge .cart'));
+          });
+
+          it('should search for element inside document', () => {
+            expect(document.querySelector).toHaveBeenCalledTimes(1);
+            expect(document.querySelector).toHaveBeenCalledWith('.knowledge .cart');
+          });
+          it('should search for elements inside scope', () => {
+            expect(scope.querySelector).toHaveBeenCalledWith('.title');
+            expect(scope.querySelector).toHaveBeenCalledWith('img');
+            expect(scope.querySelectorAll).toHaveBeenCalledWith('.content a');
+          });
+          it('should return structured response as object with keys from array', () => {
+            const expectedResponse = {
+              0: {
+                alt: 'Node.js logo',
+                src: 'https://nodejs.org/static/images/logo.svg',
+              },
+              1: 'Node.js',
+              2: [
+                'https://nodejs.org/dist/latest-v10.x/docs/api/',
+                'https://nodejs.org/dist/latest-v10.x/docs/api/async_hooks.html',
+              ],
+            };
+            expect(response).toEqual(expectedResponse);
+          });
+        });
+        describe('when map is NOT an object', () => {
+          let scope: any;
+          let response: any;
+
+          beforeAll(() => {
+            const map = true;
+            scope = {
+              querySelector: jest.fn(),
+              querySelectorAll: jest.fn(),
+            };
+            document.querySelector = jest.fn(() => scope);
+            response = extractFromDocument(new Scope(map as any, '.knowledge .cart'));
+          });
+
+          it('should search for element inside document', () => {
+            expect(document.querySelector).toHaveBeenCalledTimes(1);
+            expect(document.querySelector).toHaveBeenCalledWith('.knowledge .cart');
+          });
+          it('should NOT search for elements inside scope', () => {
+            expect(scope.querySelector).toHaveBeenCalledTimes(0);
+            expect(scope.querySelectorAll).toHaveBeenCalledTimes(0);
+          });
+          it('should return an empty object', () => {
+            const expectedResponse = {};
+            expect(response).toEqual(expectedResponse);
+          });
         });
       });
       describe('and falsy isSingle', () => {
@@ -240,14 +325,19 @@ describe('extractFromDocument', () => {
         });
 
         it('should search for elements inside document', () => {
+          expect(document.querySelector).toHaveBeenCalledTimes(1);
           expect(document.querySelectorAll).toHaveBeenCalledWith('.knowledge .cart');
         });
         it('should search for elements inside scopes', () => {
+          expect(scope1.querySelector).toHaveBeenCalledTimes(3);
           expect(scope1.querySelector).toHaveBeenCalledWith('.title');
           expect(scope1.querySelector).toHaveBeenCalledWith('img');
+          expect(scope1.querySelectorAll).toHaveBeenCalledTimes(1);
           expect(scope1.querySelectorAll).toHaveBeenCalledWith('.content a');
+          expect(scope2.querySelector).toHaveBeenCalledTimes(3);
           expect(scope2.querySelector).toHaveBeenCalledWith('.title');
           expect(scope2.querySelector).toHaveBeenCalledWith('img');
+          expect(scope2.querySelectorAll).toHaveBeenCalledTimes(1);
           expect(scope2.querySelectorAll).toHaveBeenCalledWith('.content a');
         });
         it('should return structured response as array of objects', () => {

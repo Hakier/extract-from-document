@@ -19,7 +19,7 @@ export function extractFromDocument(recipe: IRecipe, scope: IScope = document): 
     }
 
     public static mapValues(obj: IObject, cb: ICallback): IObject {
-      return (Object as any)
+      return Object
         .entries(obj)
         .reduce((agg: any, [key, val]: [string, any]) => Object.assign(agg, { [key]: cb(val) }), {});
     }
