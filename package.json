@@ -1,6 +1,6 @@
 {
   "name": "@hakier/crawler",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,8 +10,10 @@
     "check": "npm i && npm run build && npm run lint && npm run test && npm outdated",
     "release": "npm run check && npm publish",
     "start": "node src",
-    "test": "jest",
-    "testing": "jest --watch"
+    "test": "jest -c jest.config.js",
+    "test:integration": "jest -c jest.config.integration.js",
+    "test:unit": "jest -c jest.config.unit.js",
+    "testing": "jest -c jest.config.unit.js --watch --coverage false"
   },
   "keywords": [],
   "author": "hakier <hakier29a@gmail.com>",

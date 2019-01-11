@@ -28,8 +28,7 @@ module.exports = {
 
   // An array of regexp pattern strings used to skip coverage collection
   coveragePathIgnorePatterns: [
-    "/node_modules/",
-    "<rootDir>/app"
+    "/node_modules/"
   ],
 
   // A list of reporter names that Jest uses when writing coverage reports
@@ -146,13 +145,12 @@ module.exports = {
 
   // The glob patterns Jest uses to detect test files
   testMatch: [
-    "**/(src|app)/**/*.spec.+(ts|tsx)"
+    "**/src/**/*\.(i|)spec.+(ts|tsx)"
   ],
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
   testPathIgnorePatterns: [
-    "/node_modules/",
-    "<rootDir>/projects/"
+    "/node_modules/"
   ],
 
   // The regexp pattern Jest uses to detect test files
