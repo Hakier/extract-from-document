@@ -1,6 +1,6 @@
 {
   "name": "@hakier/crawler",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -19,7 +19,7 @@
   "author": "hakier <hakier29a@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "@hakier/logger": "^1.0.0",
+    "@hakier/logger": "^1.1.1",
     "puppeteer": "^1.11.0",
     "winston": "^3.1.0"
   },
