@@ -114,8 +114,10 @@ describe('extract integration', () => {
             },
             title: 'ES6',
           };
-          expect(await extract(new Scope(nestedMap, '.knowledge .card'), testFile)).toEqual(expectedNestedMapResult);
-          expect(await extract(new Scope(nestedMapScope, '.knowledge .card'), testFile)).toEqual(expectedNestedMapResult);
+          const nextedMapResult = await extract(new Scope(nestedMap, '.knowledge .card'), testFile);
+          const nestedMapScopeResult = await extract(new Scope(nestedMapScope, '.knowledge .card'), testFile);
+          expect(nextedMapResult).toEqual(expectedNestedMapResult);
+          expect(nestedMapScopeResult).toEqual(expectedNestedMapResult);
         });
       });
       describe('and falsy isSingle', () => {
