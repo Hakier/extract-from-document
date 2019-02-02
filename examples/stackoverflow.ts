@@ -1,7 +1,6 @@
 import { logger } from '@hakier/logger';
-import { Scope } from '../src/models/scope';
-import { Source } from '../src/models/source';
-import { extract } from '../src/util/extract';
+import { Scope, Source } from '../src';
+import { extract } from '../src/lib/util/extract';
 
 const recipe = {
   hotNetworkQuestions: new Scope({

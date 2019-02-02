@@ -1,7 +1,4 @@
-import { IMap } from '../models/map';
-import { IRecipe } from '../models/recipe';
-import { Scope } from '../models/scope';
-import { Source } from '../models/source';
+import { IMap, IRecipe, Scope, Source } from '../models';
 
 interface IObject {
   [key: string]: any;

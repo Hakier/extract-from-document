@@ -1,6 +1,6 @@
 import { launch } from 'puppeteer';
 
-import { IRecipe } from '../models/recipe';
+import { IRecipe } from '../models';
 import { extractFromDocument } from './extract-from-document';
 
 export async function extract(recipe: IRecipe, url: string) {
