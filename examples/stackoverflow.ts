@@ -1,5 +1,5 @@
 import { logger } from '@hakier/logger';
-import { Scope, Source } from '../src';
+import { Scope, Source } from '../src/lib';
 import { extract } from '../src/lib/util/extract';
 
 const recipe = {
