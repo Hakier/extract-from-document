@@ -2,7 +2,7 @@ const config = require('./jest.config');
 
 config.collectCoverage = true;
 config.testMatch = [
-  "**/src/**/*\.spec.+(ts|tsx)"
+  "**/src/**/*\.spec.+(ts|tsx)",
 ];
 config.coverageThreshold = {
   global: {

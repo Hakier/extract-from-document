@@ -1,6 +1,5 @@
-import { logger } from '@hakier/logger';
-import { Scope, Source } from '../src/lib';
-import { extract } from '../src/lib/util/extract';
+import { Scope, Source } from '../lib';
+import { extract } from './util/extract';
 
 const recipe = {
   hotNetworkQuestions: new Scope({
@@ -18,4 +17,5 @@ const recipe = {
 };
 const url = 'https://stackoverflow.com/questions/24825860/code-coverage-for-jest';
 
-extract(recipe, url).then((result: any) => logger.info(JSON.stringify(result, null, 2)));
+// tslint:disable-next-line:no-console
+extract(recipe, url).then((result: any) => console.info(JSON.stringify(result, null, 2)));

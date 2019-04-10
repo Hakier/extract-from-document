@@ -1,4 +1,4 @@
-import { Scope, Source } from '../models';
+import { Scope, Source } from '../../lib/models';
 import { extract } from './extract';
 
 describe('extract integration', () => {
