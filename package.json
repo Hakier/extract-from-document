@@ -1,8 +1,9 @@
 {
   "name": "extract-from-document",
   "version": "0.3.0",
-  "description": "This is a utility function that simplifies data extraction from document",
-  "main": "index.js",
+  "description": "Simplify data extraction from document",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "lint": "tslint --project tsconfig.json",
     "removeDist": "rm -rf dist",
@@ -15,7 +16,17 @@
     "test:unit": "jest -c jest.config.unit.js",
     "testing": "jest -c jest.config.unit.js --watch --coverage false"
   },
-  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/hakier/extract-from-document.git"
+  },
+  "readmeFilename": "README.md",
+  "keywords": [
+    "dom",
+    "crawler",
+    "extract",
+    "document"
+  ],
   "author": "hakier <hakier29a@gmail.com>",
   "license": "ISC",
   "devDependencies": {
