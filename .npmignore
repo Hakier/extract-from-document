@@ -1,0 +1,8 @@
+.idea
+jest.config*.js
+src
+examples
+tsconfig.json
+tslint.json
+*.spec.*
+index.*

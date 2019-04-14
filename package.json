@@ -2,8 +2,8 @@
   "name": "extract-from-document",
   "version": "0.3.0",
   "description": "Simplify data extraction from document",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/public_api.js",
+  "types": "dist/public_api.d.ts",
   "scripts": {
     "lint": "tslint --project tsconfig.json",
     "removeDist": "rm -rf dist",
