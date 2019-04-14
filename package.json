@@ -1,6 +1,6 @@
 {
   "name": "extract-from-document",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "Simplify data extraction from document",
   "main": "dist/public_api.js",
   "types": "dist/public_api.d.ts",
