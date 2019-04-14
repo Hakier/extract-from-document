@@ -92,3 +92,42 @@ const url = 'https://stackoverflow.com/questions/24825860/code-coverage-for-jest
 
 extract(recipe, url).then((result: any) => console.info(JSON.stringify(result, null, 2)));
 ```
+
+In a result we will get:
+```json
+{
+  "hotNetworkQuestions": [
+    {
+      "title": "What computer would be fastest for Mathematica Home Edition?",
+      "url": "https://mathematica.stackexchange.com/questions/195184/what-computer-would-be-fastest-for-mathematica-home-edition"
+    },
+    {
+      "title": "Slither Like a Snake",
+      "url": "https://codegolf.stackexchange.com/questions/183153/slither-like-a-snake"
+    },
+    {
+      "title": "How is simplicity better than precision and clarity in prose?",
+      "url": "https://writing.stackexchange.com/questions/44589/how-is-simplicity-better-than-precision-and-clarity-in-prose"
+    }
+  ],
+  "related": [
+    {
+      "answer": {
+        "url": "https://stackoverflow.com/q/336859?rq=1",
+        "votes": "6394"
+      },
+      "title": "var functionName = function() {} vs function functionName() {}",
+      "url": "https://stackoverflow.com/questions/336859/var-functionname-function-vs-function-functionname?rq=1"
+    },
+    {
+      "answer": {
+        "url": "https://stackoverflow.com/q/40465047?rq=1",
+        "votes": "173"
+      },
+      "title": "How can I mock an ES6 module import using Jest?",
+      "url": "https://stackoverflow.com/questions/40465047/how-can-i-mock-an-es6-module-import-using-jest?rq=1"
+    }
+  ]
+}
+
+```
