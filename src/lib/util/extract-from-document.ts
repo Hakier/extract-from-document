@@ -66,6 +66,10 @@ export function extractFromDocument(recipe: IRecipe, scope: IScope = document): 
     }
   }
 
+  if (Util.isString(recipe)) {
+    return Extractor.source(new Source(recipe as any));
+  }
+
   if (Array.isArray(recipe) || !Util.isObject(recipe)) {
     return;
   }
