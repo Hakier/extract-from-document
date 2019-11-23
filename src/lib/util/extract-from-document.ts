@@ -21,7 +21,7 @@ export function extractFromDocument(recipe: IRecipe, scope: IScope = document): 
         .reduce((agg: any, [key, val]: [string, any]) => Object.assign(agg, { [key]: cb(val) }), {});
     }
 
-    public static isObject(obj: IObject): boolean {
+    public static isObject(obj: any): boolean {
       return !!(obj && typeof obj === 'object');
     }
 
@@ -64,6 +64,10 @@ export function extractFromDocument(recipe: IRecipe, scope: IScope = document): 
         ? Extractor.map(map, scope.querySelector<HTMLElement>(selector))
         : Util.map(scope.querySelectorAll<HTMLElement>(selector), (inner: HTMLElement) => Extractor.map(map, inner));
     }
+  }
+
+  if (Util.isString(recipe)) {
+    return Extractor.source(new Source(recipe as any));
   }
 
   if (Array.isArray(recipe) || !Util.isObject(recipe)) {
