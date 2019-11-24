@@ -22,6 +22,35 @@ describe('extractFromDocument', () => {
       expect(extractFromDocument(true as any)).toBeUndefined();
     });
   });
+  describe('given string', () => {
+    beforeAll(() => {
+      document.querySelector = jest.fn();
+      extractFromDocument('some-selector');
+    });
+
+    it('should search for single element using given selector', () => {
+      expect(document.querySelector).toHaveBeenCalledWith('some-selector');
+    });
+
+    describe('when element found', () => {
+      beforeAll(() => {
+        document.querySelector = jest.fn(() => ({ innerText: 'lorem ipsum' }));
+      });
+
+      it(`should return value of element innerText property`, () => {
+        expect(extractFromDocument('some-selector')).toEqual('lorem ipsum');
+      });
+    });
+    describe('when element NOT found', () => {
+      beforeAll(() => {
+        document.querySelector = jest.fn((): null => null);
+      });
+
+      it('should return null', () => {
+        expect(extractFromDocument(new Source('some-selector'))).toBeNull();
+      });
+    });
+  });
   describe('given array', () => {
     it('should return an empty object', () => {
       expect(extractFromDocument(['lorem', 'ipsum'] as any)).toBeUndefined();
