@@ -1,4 +1,4 @@
-import { Scope, Source } from '../models';
+import { Attribute, Scope, Source } from '../models';
 import { extractFromDocument } from './extract-from-document';
 
 describe('extractFromDocument', () => {
@@ -133,6 +133,51 @@ describe('extractFromDocument', () => {
         it('should return empty array', () => {
           expect(extractFromDocument(new Source('some-selector', 'innerText', false))).toEqual([]);
         });
+      });
+    });
+  });
+  describe('given Attribute', () => {
+    describe('when scope exists', () => {
+      describe('and attribute exists directly on a scope', () => {
+        let result: string;
+
+        beforeAll(() => {
+          (document as any).getAttribute = jest.fn();
+          (document as any)['some-attribute'] = 'I exist';
+
+          result = extractFromDocument(new Attribute('some-attribute'));
+        });
+
+        it('should return attribute value', () => {
+          expect(result).toEqual('I exist');
+        });
+        it('should NOT call getAttribute', () => {
+          expect((document as any).getAttribute).toHaveBeenCalledTimes(0);
+        });
+      });
+      describe('and attribute NOT exists directly on a scope', () => {
+        const scope = {};
+        let result: string;
+
+        beforeAll(() => {
+          (scope as any).getAttribute = jest.fn((attr: string) => attr === 'some-attribute' && 'I am deeper');
+          (scope as any)['some-attribute'] = undefined;
+
+          result = extractFromDocument(new Attribute('some-attribute'), scope as any);
+        });
+
+        it(`should call getAttribute to get attribute's value`, () => {
+          expect((scope as any).getAttribute).toHaveBeenCalledTimes(1);
+          expect((scope as any).getAttribute).toHaveBeenCalledWith('some-attribute');
+        });
+        it('should return attribute value', () => {
+          expect(result).toEqual('I am deeper');
+        });
+      });
+    });
+    describe('when scope NOT exist', () => {
+      it('should return null', () => {
+        expect(extractFromDocument(new Attribute(('some-attribute-selector')), null as any)).toBeNull();
       });
     });
   });
@@ -333,20 +378,29 @@ describe('extractFromDocument', () => {
 
         beforeAll(() => {
           const map = {
+            attributeOnScopeElement: new Attribute('data-attribute'),
             img: {
               alt: new Source('img', 'alt'),
               src: new Source('img', 'src'),
             },
+            nonExistingAttribute: new Attribute('non-existing-attribute'),
             title: new Source('.title'),
             urls: new Source('.content a', 'href', false),
           };
           scope1 = {
+            getAttribute: (attr: string) => {
+              return attr === 'data-attribute' ? 'some attribute accessed by calling getAttribute on a scope' : null;
+            },
             querySelector: jest.fn((selector: string): string => mockedDomSingle1[selector]),
             querySelectorAll: jest.fn((selector: string): string => mockedDomMultiple1[selector]),
           };
           scope2 = {
-            querySelector: jest.fn((selector: string): string => mockedDomSingle2[selector]),
-            querySelectorAll: jest.fn((selector: string): string => mockedDomMultiple2[selector]),
+            'data-attribute': 'some attribute directly on a scope',
+            'getAttribute': (attr: string) => {
+              return attr === 'data-attribute' ? 'some attribute accessed by calling getAttribute on a scope' : null;
+            },
+            'querySelector': jest.fn((selector: string): string => mockedDomSingle2[selector]),
+            'querySelectorAll': jest.fn((selector: string): string => mockedDomMultiple2[selector]),
           };
           document.querySelectorAll = jest.fn(() => [scope1, scope2]);
           response = extractFromDocument(new Scope(map, '.knowledge .cart', false));
@@ -371,10 +425,12 @@ describe('extractFromDocument', () => {
         it('should return structured response as array of objects', () => {
           const expectedResponse = [
             {
+              attributeOnScopeElement: 'some attribute accessed by calling getAttribute on a scope',
               img: {
                 alt: 'Node.js logo',
                 src: 'https://nodejs.org/static/images/logo.svg',
               },
+              nonExistingAttribute: null,
               title: 'Node.js',
               urls: [
                 'https://nodejs.org/dist/latest-v10.x/docs/api/',
@@ -382,10 +438,12 @@ describe('extractFromDocument', () => {
               ],
             },
             {
+              attributeOnScopeElement: 'some attribute directly on a scope',
               img: {
                 alt: 'TypeScript logo',
                 src: 'https://www.typescriptlang.org/assets/images/logo_nocircle.svg',
               },
+              nonExistingAttribute: null,
               title: 'TypeScript',
               urls: [
                 'https://www.typescriptlang.org/docs/index.html',

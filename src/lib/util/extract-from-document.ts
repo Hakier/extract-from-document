@@ -1,4 +1,4 @@
-import { IMap, IRecipe, Scope, Source } from '../models';
+import { Attribute, IMap, IRecipe, Scope, Source } from '../models';
 
 interface IObject {
   [key: string]: any;
@@ -29,6 +29,10 @@ export function extractFromDocument(recipe: IRecipe, scope: IScope = document): 
       return typeof value === 'string';
     }
 
+    public static isAttribute({ attribute }: Attribute): boolean {
+      return !!attribute;
+    }
+
     public static isSource({ selector, attribute }: Source): boolean {
       return !!(selector && attribute);
     }
@@ -49,20 +53,27 @@ export function extractFromDocument(recipe: IRecipe, scope: IScope = document): 
         : {};
     }
 
-    public static source({ selector, attribute, isSingle }: Source): string | null | Array<string | null> {
-      const retrieveAttributeValue = (el: Element | null): string | null => {
-        return !el ? null : Util.trimString((el as any)[attribute]);
-      };
+    public static attribute({ attribute }: Attribute): string | null | Array<string | null> {
+      return this.retrieveAttributeValue(scope, attribute);
+    }
 
+    public static source({ selector, attribute, isSingle }: Source): string | null | Array<string | null> {
       return isSingle
-        ? retrieveAttributeValue(scope.querySelector(selector))
-        : Util.map<string | null>(scope.querySelectorAll(selector), retrieveAttributeValue);
+        ? this.retrieveAttributeValue(scope.querySelector(selector), attribute)
+        : Util.map<string | null>(
+          scope.querySelectorAll(selector),
+          (el: Element) => this.retrieveAttributeValue(el, attribute),
+        );
     }
 
     public static scope({ map, selector, isSingle }: Scope): any {
       return isSingle
         ? Extractor.map(map, scope.querySelector<HTMLElement>(selector))
         : Util.map(scope.querySelectorAll<HTMLElement>(selector), (inner: HTMLElement) => Extractor.map(map, inner));
+    }
+
+    public static retrieveAttributeValue(el: Element | null | IScope, attribute: string): string | null {
+      return !el ? null : Util.trimString((el as any)[attribute] || (el as any).getAttribute(attribute));
     }
   }
 
@@ -71,15 +82,20 @@ export function extractFromDocument(recipe: IRecipe, scope: IScope = document): 
   }
 
   if (Array.isArray(recipe) || !Util.isObject(recipe)) {
+
     return;
   }
-
   if (Util.isSource(recipe as Source)) {
+
     return Extractor.source(recipe as Source);
   }
 
   if (Util.isScope(recipe as Scope)) {
     return Extractor.scope(recipe as Scope);
+  }
+
+  if (Util.isAttribute(recipe as Attribute)) {
+    return Extractor.attribute(recipe as Attribute);
   }
 
   return Extractor.map(recipe as IMap);
