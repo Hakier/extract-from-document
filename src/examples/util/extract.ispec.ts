@@ -13,8 +13,8 @@ describe('extract integration', () => {
       });
       describe('when element exists', () => {
         describe('and attribute NOT exists', () => {
-          it('should return undefined', async () => {
-            expect(await extract(new Source('h1', 'not-existing-attribute'), testFile)).toEqual(undefined);
+          it('should return null', async () => {
+            expect(await extract(new Source('h1', 'not-existing-attribute'), testFile)).toEqual(null);
           });
         });
         describe('and attribute exists', () => {
